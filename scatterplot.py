@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot(X, Y=None, clr="b"):
+def plot(X, Y=None, clr="b", label=""):
     """
     2D plot using matplotlib.
 
@@ -22,7 +22,7 @@ def plot(X, Y=None, clr="b"):
         xx = X
         yy = Y
 
-    plt.plot(xx, yy, clr)
+    plt.plot(xx, yy, clr, label=label)
     plt.show(block=False)
 
 
