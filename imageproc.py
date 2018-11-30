@@ -1,6 +1,4 @@
 import cv2
-import scipy
-import open3d
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -79,18 +77,6 @@ def imblend(image1, image2, alpha=0.5):
     return dst
 
 
-def clf():
-    plt.clf()
-
-
-def pause(seconds=0):
-    try:
-        plt.pause(seconds)
-    except Exception:
-        # can't invoke "update" command: application has been destroyed
-        pass
-
-
 def imshow(image):
     """
     Show an image (non blocking).
@@ -113,35 +99,3 @@ def imagesc(image):
     if maxval > 0:
         dst = dst / maxval
     imshow(dst)
-
-
-def scatter(X, Y=None):
-    """
-    2D scatter plot using matplotlib.
-
-    X               first dimension; if Y is None, shape of X must be Nx2
-    Y               second dimension
-    """
-    if Y is None:
-        xy = X
-    else:
-        xy = np.stack((X,Y),axis=-1)
-    plt.scatter(xy[:,0], xy[:,1])
-    plt.show(block=False)
-
-
-def scatter3(X, Y=None, Z=None):
-    """
-    3D scatter plot using Open3D lib.
-
-    X               first dimension; if Y and Z are None, shape of X must be Nx3
-    Y               second dimension
-    Z               third dimension
-    """
-    if Y is None and Z is None:
-        xyz = X
-    else:
-        xyz = np.stack((X,Y,Z),axis=-1)
-    pcd = open3d.PointCloud()
-    pcd.points = open3d.Vector3dVector(xyz)
-    open3d.draw_geometries([pcd])
