@@ -1,7 +1,9 @@
+import cv2
+import scipy
+import open3d
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-import open3d
 
 
 def imread(filename, size=None, dtype=None, fmt=None):
@@ -43,10 +45,8 @@ def imresize(image, size):
     image           ndarray to resize
     size            desired resolution as (W,H) tuple
     """
-    src = Image.fromarray(image)
-    dst = src.resize(size)
-    return np.asarray(dst)
-
+    dst = cv2.resize(image, size)
+    return dst
 
 def imrotate(image, angle):
     """
@@ -55,9 +55,10 @@ def imrotate(image, angle):
     image           ndarray to resize
     angle           rotation angle in degrees
     """
-    src = Image.fromarray(image)
-    dst = src.rotate(angle)
-    return np.asarray(dst)
+    rows, cols = image.shape[:2]
+    R = cv2.getRotationMatrix2D((rows//2, cols//2), angle, 1)
+    dst = cv2.warpAffine(image, R, (rows, cols))
+    return dst
 
 
 def imblend(image1, image2, alpha=0.5):
@@ -76,6 +77,18 @@ def imblend(image1, image2, alpha=0.5):
         dst = Image.blend(src1, src2, alpha=alpha)
         dst = np.asarray(dst)
     return dst
+
+
+def clf():
+    plt.clf()
+
+
+def pause(seconds=0):
+    try:
+        plt.pause(seconds)
+    except Exception:
+        # can't invoke "update" command: application has been destroyed
+        pass
 
 
 def imshow(image):

@@ -30,6 +30,7 @@ def load(filename):
 
     if ext in ["npy", "npz"]:
         data = np.load(filename)
+        data = data["data"]
         data = data.any()
     
     return data
@@ -55,7 +56,7 @@ def save(filename, data):
         np.savetxt(filename, data, fmt="%s")
 
     if ext in ["yml", "yaml"]:
-        with open(filename, "w") as fp:
+        with open(filename, "w"):
             yaml.dump(data)
 
     if ext in ["mat"]:
@@ -65,4 +66,4 @@ def save(filename, data):
         np.save(filename, data)
 
     if ext in ["npz"]:
-        np.savez(filename, data)
+        np.savez(filename, data=data)
