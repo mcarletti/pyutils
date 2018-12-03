@@ -28,7 +28,10 @@ def load(filename):
         for k in data.keys():
             data[k] = np.squeeze(data[k])
 
-    if ext in ["npy", "npz"]:
+    if ext in ["npy"]:
+        data = np.load(filename)
+
+    if ext == "npz":
         data = np.load(filename)
         data = data["data"]
         data = data.any()
