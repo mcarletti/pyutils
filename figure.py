@@ -5,6 +5,10 @@ def figure(h=None):
     plt.figure(h)
 
 
+def close(h=None):
+    plt.close(h)
+
+
 def clf():
     plt.clf()
     plt.show(block=False)
@@ -41,6 +45,11 @@ def xlabel(name):
 
 def ylabel(name):
     plt.ylabel(name)
+    plt.show(block=False)
+
+
+def title(title):
+    plt.title(title)
     plt.show(block=False)
 
 
