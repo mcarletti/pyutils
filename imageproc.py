@@ -65,15 +65,15 @@ def imblend(image1, image2, alpha=0.5):
 
     image1          first ndarray
     image2          second ndarray
-    alpha           normalized blending factor
+    alpha           normalized blending factor or mask
     """
-    if len(image1.shape) == 2:
-        dst = alpha * image1 + (1. - alpha) * image2
-    else:
-        src1 = Image.fromarray(image1).convert("RGBA")
-        src2 = Image.fromarray(image2).convert("RGBA")
-        dst = Image.blend(src1, src2, alpha=alpha)
-        dst = np.asarray(dst)
+    mask = alpha
+    if isinstance(alpha, np.ndarray):
+        nChannels = image1.shape[-1]
+        mask = alpha.copy()
+        mask = np.stack([mask]*nChannels, axis=-1)
+        mask = mask.astype(np.float32)
+    dst = mask * image1 + (1. - mask) * image2
     return dst
 
 
