@@ -10,47 +10,8 @@ class Dataset(torch.utils.data.Dataset):
     """
     """
 
-    # def __init__(self, root, dsname, mode, cbPreprocessingFun=None):
-    #     """
-    #     Initialize the dataset.
-    #     The "root/dsname" folder contains (at least) a folder named "mode".
-    #     The "root/dsname/mode" folder contains a set of directories.
-    #     Each folder is a class containing a set of images.
-    #     The name of the folders are the labels of the classes, which indices
-    #     are set according to the alphabetical order of the classes (e.g. if
-    #     there are two classes "TRUCK" and "CAR", their id will be "1" and "0"
-    #     respectively).
-    #
-    #     root        parent data folder
-    #     dsname      name of the dataset
-    #     mode        "train", "valid" or "test"
-    #     """
-    #
-    #     searchpath = os.path.join(root, dsname, mode)
-    #
-    #     foldernames = [x.split("/")[-1] for x in glob.glob(os.path.join(searchpath, "*")) if os.path.isdir(x)]
-    #     classnames = sorted(set(foldernames))
-    #     self.nClasses = len(classnames)
-    #
-    #     if self.nClasses == 0:
-    #         raise Exception("Number of classes is 0. Check search path")
-    #
-    #     labels = {}
-    #     for i,x in enumerate(classnames):
-    #         labels[x] = i
-    #
-    #     self.filenames = sorted(glob.glob(os.path.join(searchpath, "*/*.jpg")))
-    #     self.nSamples = len(self.filenames)
-    #
-    #     self.targets = [-1] * self.nSamples
-    #     for i,x in enumerate(self.filenames):
-    #         cname = x.split("/")[-2]
-    #         self.targets[i] = labels[cname]
-    #
-    #     self.cbPreprocessingFun = cbPreprocessingFun
 
-
-    def __init__(self, parent, mode, cbLoadImageFun=None, cbPreprocessingFun=None):
+    def __init__(self, parent, mode, cbLoadSampleFun, cbPreprocessingFun=None):
         """
         Initialize the dataset.
         The file "root/dsname/mode.txt" will be loaded.
@@ -60,8 +21,12 @@ class Dataset(torch.utils.data.Dataset):
         In the folder "root/dsname" there is also a "label.txt" file
         with the names of all the classes.
 
-        parent      data folder containing the dataset
-        mode        "train", "valid" or "test"
+        parent              data folder containing the dataset
+        mode                "data", "train", "valid" or "test"
+        cbLoadSampleFun     function taking as parameter the filename of
+                            the sample to load
+        cbPreprocessingFun  function to preprocess the sample loaded
+                            through "cbLoadSampleFun"
         """
 
         fpath = os.path.join(parent, mode + ".txt")
@@ -71,20 +36,18 @@ class Dataset(torch.utils.data.Dataset):
         self.targets = data[:,1].astype(np.int32)
         self.nSamples = len(self.filenames)
         self.nClasses = len(set(self.targets))
-        self.cbLoadImageFun = cbLoadImageFun
+        self.cbLoadSampleFun = cbLoadSampleFun
         self.cbPreprocessingFun = cbPreprocessingFun
 
 
     def __getitem__(self, index):
         """
-        Return a sample and its index.
+        Return a sample and its target values.
+
+        index
         """
 
-        if self.cbLoadImageFun is None:
-            x = imread(self.filenames[index], dtype=np.uint8, fmt="RGB")
-        else:
-            x = self.cbLoadImageFun(self.filenames[index])
-            
+        x = self.cbLoadSampleFun(self.filenames[index])
         y = np.asarray(self.targets[index])
 
         if self.cbPreprocessingFun is not None:
@@ -95,7 +58,7 @@ class Dataset(torch.utils.data.Dataset):
 
     def __len__(self):
         """
-        Get the length of the dataset in term of number of samples.
+        Get the length of the dataset in terms of number of samples.
         """
 
         return self.nSamples
@@ -103,7 +66,7 @@ class Dataset(torch.utils.data.Dataset):
 
     def shuffle(self):
         """
-        Random permutation of the dataset.
+        In place random permutation of the dataset.
         """
 
         idx = np.random.permutation(self.nSamples)
