@@ -3,7 +3,7 @@ import glob
 import torch
 import torch.utils.data
 import numpy as np
-from imageproc import imread
+from .imageproc import imread
 
 
 class Dataset(torch.utils.data.Dataset):
