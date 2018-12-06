@@ -1,11 +1,15 @@
 import numpy as np
 
 
-def norm(arr):
+def norm(arr, axis=None):
     """
     Compute the norm of a vector.
+    
+    arr         input ndarray
+    axis        axis along which norm is computed
     """
-    return np.sqrt(np.sum(arr**2))
+
+    return np.sqrt(np.sum(arr**2, axis=axis))
 
 
 def lookAt(location, target, dtype=np.float32):
